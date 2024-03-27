@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  post_cont:
+    image: postgres:16.2-alpine3.19
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 1576
+    ports:
+      - "5433:5432"
+    networks:
+      - baum_pred
+  my_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - post_cont
+    ports:
+      -  "9023:9023"
+    networks:
+      - baum_pred
+
+networks:
+  baum_pred:
+    driver: bridge
