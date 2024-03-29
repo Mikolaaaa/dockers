@@ -93,7 +93,15 @@ def main():
                     URL_POOLSPACE_BACKUP
                 )
 
+                i = 1
+
                 used_cap_all = 0
+
+                # Получение текущей даты и времени
+                current_time = datetime.now().strftime('%Y-%m-%d')
+
+                # Преобразование строки в объект datetime
+                datetime_object = datetime.strptime(current_time, "%Y-%m-%d")
 
                 # Считывание used_cap_pool, total_cap_pool и used_cap_array
                 for ppp in data['pools']:
@@ -104,7 +112,14 @@ def main():
                     print(f"total_cap_{name}:", size)
                     if used != '0':
                         used = convert_to_gb(used)
+                        size = convert_to_gb(size)
+                        cursor.execute(
+                            "INSERT INTO mega_test (sn, \"object type\", object, time, \"Capacity usage(%%)\", \"Total capacity(MB)\", \"Used capacity(MB)\", array_num) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                            ("20240207000000", "Storage Pool", f"Storage Pool00{i}", datetime_object,
+                             (used / size) * 100, size,
+                             used, "Array1"))
                         used_cap_all += used
+                    i = i + 1
 
                 print()
                 print("total_cap_array:", total_cap_array, "G")
@@ -115,15 +130,9 @@ def main():
 
                 print("% заполнения array:", percent)
 
-                # Получение текущей даты и времени
-                current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-                # Преобразование строки в объект datetime
-                datetime_object = datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S")
-
                 # Запись в БД
                 cursor.execute(
-                    "INSERT INTO mega_test (sn, array_num, object_type, object, time, \"Capacity_usage(%%)\", \"Total_capacity(GB)\", \"Used_capacity(GB)\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    "INSERT INTO mega_test (sn, array_num, \"object type\", object, time, \"Capacity usage(%%)\", \"Total capacity(MB)\", \"Used capacity(MB)\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     ("20240207000000", "Array1", "Array", "System", datetime_object, percent, total_cap_array,
                      used_cap_all))
 

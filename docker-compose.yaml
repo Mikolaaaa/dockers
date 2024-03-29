@@ -9,16 +9,35 @@ services:
       - "5433:5432"
     networks:
       - baum_pred
-  my_service:
+  shd_conn:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: shd_connector_dir/Dockerfile
     depends_on:
       - post_cont
     ports:
       -  "9023:9023"
     networks:
       - baum_pred
+  predict:
+    build:
+      context: .
+      dockerfile: baum_ai_predict/Dockerfile
+    depends_on:
+      - post_cont
+    ports:
+      - "8001:8000"
+    networks:
+      - baum_pred
+  frontend:
+    build:
+      context: ./frontend_dir # Путь к папке с вашим фронтендом React.js
+      dockerfile: ./Dockerfile  # Путь к Dockerfile для фронтенда
+    ports:
+      - "3000:3000"
+    networks:
+      - baum_pred
+
 
 networks:
   baum_pred:

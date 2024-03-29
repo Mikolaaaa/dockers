@@ -1,0 +1,49 @@
+.main-page-container {
+    max-width: 1000px;
+    background: white;
+    padding: 24px;
+    margin: 100px auto;
+    display: flex;
+    border-radius: 4px;
+}
+
+.title- {
+    font-size: 14px;
+    color: #333333;
+}
+
+.input-div {
+    margin-left: 20px;
+    display: grid;
+    margin-bottom: 20px;
+}
+.input-div > span {
+    margin-left: 35%
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.graph {
+    border-radius: 4px;
+    height: 100%;
+    background: #f4f4f5;
+    padding: 5px;
+    display: inline-block;
+}
+
+.MultiSelect > div{
+    width: 100%;
+    border: 1px solid #5558FA;
+    outline: none;
+    padding: 10px 5px 5px 5px;
+}
+.MultiSelect > div > ul {
+    outline: none;
+    border: 0;
+}
+.MultiSelect > div > span {
+    background: #5558FA;
+}
