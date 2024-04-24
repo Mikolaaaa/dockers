@@ -7,13 +7,16 @@ from datetime import timedelta, datetime
 from scipy.signal import find_peaks
 from train_regression import train_regression
 
+import pandas as pd
+
+
 def prediction_linear_regression_shd(
         df: pd.DataFrame,
         df_levels: Union[pd.DataFrame, DataLogs],
         vars_dict: dict,
         sp_flag: bool,
         select_window_type: str,
-        dropdown_block: dict,
+        dropdown_block:dict,
         levels_list: Union[str, list] = None,
         use_cloud: bool = False,
         # metric_name: Union[str, None] = None,
@@ -72,14 +75,10 @@ def prediction_linear_regression_shd(
     if df.shape[0] == 1:
         return None, df, error
 
-    print(16666)
-    print(df)
-
 
     extra = []
     for name, group in df.groupby('object'):
         extra.append(name)
-        print(group['time'])
         group['time'] = pd.to_datetime(group['time'])
 
         # Выбор интервала (ручной/автоматический)
@@ -103,6 +102,7 @@ def prediction_linear_regression_shd(
                 prominence = None
             last_date = group['time'].max()
             peaks_filtered, _ = find_peaks(group['Capacity usage(%)'], prominence=prominence)
+            corresponding_index = group.iloc[peaks_filtered].index
             troughs_filtered, _ = find_peaks(-group['Capacity usage(%)'], prominence=prominence)
             if len(troughs_filtered) != 0:
                 last_trough_time = group['time'].iloc[troughs_filtered[-1]]
@@ -113,8 +113,12 @@ def prediction_linear_regression_shd(
             group = group[group['time'] >= last_trough_time]
 
             if len(peaks_filtered) != 0 and peaks_filtered[-1] > troughs_filtered[-1]:
-                last_peak_time = group['time'].loc[peaks_filtered[-1]]
-                group = group[group['time'] <= last_peak_time]
+                try:
+                    last_peak_time = group['time'].loc[peaks_filtered[-1]]
+                    group = group[group['time'] <= last_peak_time]
+                except:
+                    last_peak_time = group['time'].loc[corresponding_index[-1]]
+                    group = group[group['time'] <= last_peak_time]
 
         group_length = len(group)
 
@@ -192,29 +196,35 @@ def prediction_linear_regression_shd(
     #
     #     result_df = pd.concat([result_df, new_system_row], ignore_index=True)
     def pad_dict_list(dict_list, padel):
-        lmin = 10000000
-        for lname in dict_list.keys():
-            lmin = min(lmin, len(dict_list[lname]))
-        f = True
-        for lname in dict_list.keys():
-            ll = len(dict_list[lname])
-            if ll > lmin:
-                if f:
-                    last_date = dict_list['time'][-1]
-                    f = False
-                dict_list[lname] = dict_list[lname][:lmin]
-        for lname in dict_list.keys():
-            dict_list[lname] = [dict_list[lname][-1]]
-            if lname == 'time':
-                dict_list[lname].append(last_date)
+
+        sp_s = ['StoragePool001', 'StoragePool002', 'time']
+        result_dict_list = {
+            'time': [],
+            sp_s[0]: [],
+            sp_s[1]: []
+        }
+        if len(dict_list[sp_s[0]]) < len(dict_list[sp_s[1]]):
+            lmin = len(dict_list[sp_s[0]]) - 1
+            lmax = len(dict_list[sp_s[1]]) - 1
+            lminname = sp_s[0]
+        else:
+            lmin = len(dict_list[sp_s[1]]) - 1
+            lmax = len(dict_list[sp_s[0]]) - 1
+            lminname = sp_s[1]
+        for n in sp_s:
+            result_dict_list[n].append(dict_list[n][lmin])
+            if n != 'time':
+                result_dict_list[n].append(100)
             else:
-                dict_list[lname].append(padel)
-        return dict_list
+                result_dict_list[n].append(dict_list[n][lmax])
+
+        return result_dict_list
+
 
     if sp_flag and len(all_predictions['StoragePool001']) != 0 and len(all_predictions['StoragePool002']) != 0 :
         all_predictions = pad_dict_list(all_predictions_for_main, 100)
-        result_df = pd.DataFrame.from_dict(all_predictions)
 
+        result_df = pd.DataFrame.from_dict(all_predictions)
 
         result_df['time'] = pd.to_datetime(result_df['time']).dt.date
 

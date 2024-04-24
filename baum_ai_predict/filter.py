@@ -41,8 +41,12 @@ def filter_shd(
     for f in flags:
         level_flags.append(mapped_flags[f])
 
+    print(level_flags)
+
     df_levels = df_levels[df_levels['object'].isin(level_flags)]
+    print(df_levels)
     columns_to_drop = [col for col in df_levels.columns if df_levels[col].dtype in ['int64', 'float64'] and df_levels[col].min() < df_last_value_capacity]
+    # print(columns_to_drop)
     df_levels.drop(columns=columns_to_drop, inplace=True)
 
     return df, df_levels, error

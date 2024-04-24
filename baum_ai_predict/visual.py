@@ -37,7 +37,7 @@ def vis_overload_realtime(
     colors = iter(['blue', 'red', 'green'])
 
     colors_dict = {}
-    
+
     if data_logs.df_log.shape[0] == 1:
         return gui_dict, error
     grouped = data_logs.df_log.groupby('object')
@@ -48,7 +48,7 @@ def vis_overload_realtime(
 
     full_x = pd.Series()
     for name, group in grouped:
-        group = group.sort_values(by = ['time'])
+        group = group.sort_values(by=['time'])
         load_value_x = pd.to_datetime(group['time'])
         full_x = pd.concat([full_x, load_value_x])
         load_values_x[name] = load_value_x
@@ -106,7 +106,7 @@ def vis_overload_realtime(
                 ]).values,
                 line=[{'dash': 'dot'}],
                 names=[f'Прогноз динамики заполнения {name}'],
-                marker = [dict(color=colors_dict[name], size=1, sizemin=1)]
+                marker=[dict(color=colors_dict[name], size=1, sizemin=1)]
             )
             plots_predictions.append(extrapolation_trace)
             plots_levels.append(predict_trace)
@@ -133,11 +133,11 @@ def vis_overload_realtime(
             try:
                 l0 = value['LEVEL0']
                 level0 = LinePlot(
-                x=level_x,
-                y=pd.Series([l0, l0]),
-                names=[f'{name}: уровень 0'],
-                line=[{'dash': 'dot'}],
-                marker=[dict(color="black")]
+                    x=level_x,
+                    y=pd.Series([l0, l0]),
+                    names=[f'{name}: уровень 0'],
+                    line=[{'dash': 'dot'}],
+                    marker=[dict(color="black")]
                 )
                 lvl_plots.extend([level0])
 
@@ -165,7 +165,6 @@ def vis_overload_realtime(
             lvl_plots.extend([level1, level2])
 
     final_plots = plots + plots_levels + plots_predictions + lvl_plots
-
 
     """
     # Отрисовка прогнозов (точки)
@@ -195,25 +194,26 @@ def vis_overload_realtime(
         names=['Прогноз динамики заполнения']
     )
 """
-    #plots = [load_value_trace]#, predictions_trace, extrapolation_trace]
-
+    # plots = [load_value_trace]#, predictions_trace, extrapolation_trace]
 
     xaxis = {'xaxis': {'title': 'Дата'}}
+    yaxis = {'yaxis': {'title': 'Процент загрузки'}}
 
     gui_dict['plot'].append(
         Window(
-            window_title='Прогноз превышения значения',
+            window_title='Прогноз динамики загрузки',
             realtime=True,
             canvases=[Canvas(
-                title='Прогноз превышения значения',
+                title='Прогноз динамики загрузки',
                 xaxis=xaxis,
+                yaxis=yaxis,
                 showlegend=True,
                 plots=final_plots
             )]
         ).to_dict()
     )
 
-    #raise Exception(f"{dots_predictions}\n{dots_predictions.values}")
+    # raise Exception(f"{dots_predictions}\n{dots_predictions.values}")
     gui_dict['table'].append({
         'title': 'Достижение уровней загруженности',
         'value':

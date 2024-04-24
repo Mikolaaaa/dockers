@@ -115,7 +115,7 @@ def main():
                         size = convert_to_gb(size)
                         cursor.execute(
                             "INSERT INTO mega_test (sn, \"object type\", object, time, \"Capacity usage(%%)\", \"Total capacity(MB)\", \"Used capacity(MB)\", array_num) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                            ("20240207000000", "Storage Pool", f"Storage Pool00{i}", datetime_object,
+                            ("20240207000000", "Storage Pool", f"StoragePool00{i}", datetime_object,
                              (used / size) * 100, size,
                              used, "Array1"))
                         used_cap_all += used
