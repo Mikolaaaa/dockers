@@ -114,7 +114,7 @@ def main():
                         used = convert_to_gb(used)
                         size = convert_to_gb(size)
                         cursor.execute(
-                            "INSERT INTO mega_test (sn, \"object type\", object, time, \"Capacity usage(%%)\", \"Total capacity(MB)\", \"Used capacity(MB)\", array_num) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                            "INSERT INTO real_data (sn, \"object type\", object, time, \"Capacity usage(%%)\", \"Total capacity(MB)\", \"Used capacity(MB)\", array_num) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                             ("20240207000000", "Storage Pool", f"StoragePool00{i}", datetime_object,
                              (used / size) * 100, size,
                              used, "Array1"))
@@ -132,7 +132,7 @@ def main():
 
                 # Запись в БД
                 cursor.execute(
-                    "INSERT INTO mega_test (sn, array_num, \"object type\", object, time, \"Capacity usage(%%)\", \"Total capacity(MB)\", \"Used capacity(MB)\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    "INSERT INTO real_data (sn, array_num, \"object type\", object, time, \"Capacity usage(%%)\", \"Total capacity(MB)\", \"Used capacity(MB)\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     ("20240207000000", "Array1", "Array", "System", datetime_object, percent, total_cap_array,
                      used_cap_all))
 

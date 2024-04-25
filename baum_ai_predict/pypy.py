@@ -401,12 +401,16 @@ async def websocket_endpoint(websocket: WebSocket):
 
                         print(df_shd)
                         print(result_shd_all)
+                        result_shd_all_old = result_shd_all
                         # Добавьте данные к общему DataFrame
                         result_shd_all = pd.concat([result_shd_all, df_shd], ignore_index=True)
                         print('result_shd_all')
                         print(result_shd_all.to_string())
                         print('offset = ', offset)
-                        offset += l
+                        if result_shd_all_old.equals(result_shd_all):
+                            pass
+                        else:
+                            offset += l
 
                     result_level, column_names_level = execute_query('select * from level')
                     if result_level is not None:
