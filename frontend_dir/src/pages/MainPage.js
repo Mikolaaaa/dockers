@@ -88,6 +88,9 @@ export function MainPage() {
             console.log(response.data)
             let plot = JSON.parse(response.data.plot[0].fig)
             plot.layout.xaxis.type = 'date'
+            plot.data.forEach(item => {
+              item.visible = null;
+            });
             setData(plot)
             setLoader(false)
             setError(false)
@@ -118,7 +121,10 @@ export function MainPage() {
                             const parsedData = JSON.parse(message.data);
                             console.log(parsedData); // Проверяем результат парсинга JSON
                             let plot = JSON.parse(parsedData.plot[0].fig);
-                            plot.layout.xaxis.type = 'date';
+                            plot.layout.xaxis.type = 'date'
+                            plot.data.forEach(item => {
+                              item.visible = null;
+                            });
                             setData(plot);
                             // Дальнейшая обработка переменной plot
                         }
